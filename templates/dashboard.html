@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeafLens Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(180deg, #1e1e2f 0%, #2a2a4e 100%);
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .neon-nav {
+            background: rgba(30, 30, 47, 0.9);
+            box-shadow: 0 0 15px rgba(104, 109, 224, 0.3);
+            border-bottom: 1px solid rgba(104, 109, 224, 0.4);
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: #68d391;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .nav-link:hover {
+            color: #68d391;
+        }
+        .pulse-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .pulse {
+            position: absolute;
+            background: radial-gradient(circle, rgba(104, 109, 224, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 15s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.1); opacity: 0.4; }
+            50% { transform: scale(1.2); opacity: 0.2; }
+            100% { transform: scale(0.1); opacity: 0.4; }
+        }
+        .zoom-in {
+            animation: zoomIn 1s ease-out;
+        }
+        .zoom-in-delay-1 { animation-delay: 0.2s; }
+        .zoom-in-delay-2 { animation-delay: 0.4s; }
+        .zoom-in-delay-3 { animation-delay: 0.6s; }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .info-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: rgba(30, 30, 47, 0.8);
+        }
+        .info-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 16px rgba(104, 109, 224, 0.4);
+        }
+        .feature-card {
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(104, 109, 224, 0.3), transparent);
+            transition: 0.5s;
+        }
+        .feature-card:hover::before {
+            left: 100%;
+        }
+        .input-glow {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(104, 109, 224, 0.5);
+        }
+        .input-glow:focus {
+            border-color: #68d391;
+            box-shadow: 0 0 8px rgba(104, 109, 224, 0.6);
+            background: #2a2a4e;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen relative text-gray-200">
+    <!-- Pulse Background Animation -->
+    <div class="pulse-bg">
+        <div class="pulse w-96 h-96 top-10 left-20 opacity-30"></div>
+        <div class="pulse w-80 h-80 top-60 left-40 opacity-20" style="animation-delay: -5s;"></div>
+        <div class="pulse w-120 h-120 top-30 right-30 opacity-25" style="animation-delay: -10s;"></div>
+    </div>
+    <!-- Navigation Bar -->
+    <nav class="neon-nav fixed w-full top-0 z-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-3xl font-bold text-indigo-400">LeafLens</h1>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="/check" class="nav-link text-gray-300 px-3 py-2 text-sm font-medium">Upload</a>
+                    <a href="#features" class="nav-link text-gray-300 px-3 py-2 text-sm font-medium">Features</a>
+                    <a href="#about" class="nav-link text-gray-300 px-3 py-2 text-sm font-medium">About</a>
+                    <a href="#contact" class="nav-link text-gray-300 px-3 py-2 text-sm font-medium">Contact</a>
+                    <a href="{{ url_for('logout') }}" class="nav-link text-gray-300 px-3 py-2 text-sm font-medium">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Hero Section with Sparkle Particle Effect -->
+    <section id="hero" class="flex items-center justify-center min-h-screen pt-20 relative z-10">
+        <canvas id="particleCanvas" class="absolute inset-0 z-0"></canvas>
+        <div class="text-center max-w-4xl mx-auto px-4 relative z-10 zoom-in">
+            <h2 class="text-5xl font-bold text-white mb-6">Hello, {{ username }}!</h2>
+            <p class="text-2xl text-green-400 mb-8 animate-pulse">See Your Plants in a New Light</p>
+            <p class="text-gray-300 max-w-2xl mx-auto">Upload an image to unlock AI-driven insights about your plant’s health, species, and care needs.</p>
+            <a href="check" class="mt-6 inline-block py-3 px-6 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-300">Get Started</a>
+        </div>
+    </section>
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-900/10 relative z-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 zoom-in">
+            <h3 class="text-4xl font-bold text-indigo-400 text-center mb-10">Our Features</h3>
+            <p class="text-gray-300 text-center mb-12 max-w-3xl mx-auto">Discover the tools that empower your farming decisions.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="feature-card p-6 rounded-2xl bg-gray-800/80 text-center zoom-in-delay-1">
+                    <i class="fas fa-stethoscope text-3xl text-green-400 mb-4"></i>
+                    <h4 class="text-lg font-bold text-white mb-2">Health Diagnostics</h4>
+                    <p class="text-gray-300 text-sm">Detect diseases and nutrient issues with AI precision.</p>
+                </div>
+                <div class="feature-card p-6 rounded-2xl bg-gray-800/80 text-center zoom-in-delay-2">
+                    <i class="fas fa-leaf text-3xl text-green-400 mb-4"></i>
+                    <h4 class="text-lg font-bold text-white mb-2">Species Detection</h4>
+                    <p class="text-gray-300 text-sm">Identify your plant’s species instantly from images.</p>
+                </div>
+                <div class="feature-card p-6 rounded-2xl bg-gray-800/80 text-center zoom-in-delay-3">
+                    <i class="fas fa-sun text-3xl text-green-400 mb-4"></i>
+                    <h4 class="text-lg font-bold text-white mb-2">Care Advice</h4>
+                    <p class="text-gray-300 text-sm">Get tailored tips for watering, light, and nutrients.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- About Section -->
+    <section id="about" class="py-20 relative z-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 zoom-in">
+            <h3 class="text-4xl font-bold text-indigo-400 text-center mb-10">About LeafLens</h3>
+            <p class="text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+                LeafLens harnesses multimodal AI to provide farmers with unparalleled plant insights. 
+                Our mission is to boost crop health and sustainability through innovation.
+            </p>
+            <div class="flex justify-center">
+                <div class="info-card p-8 rounded-2xl max-w-lg text-center">
+                    <h4 class="text-2xl font-bold text-white mb-4">Our Vision</h4>
+                    <p class="text-gray-300">Pioneering smarter farming with AI since 2025.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gray-900/10 relative z-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 zoom-in">
+            <h3 class="text-4xl font-bold text-indigo-400 text-center mb-10">Get in Touch</h3>
+            <p class="text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+                Need help with plant analysis or have questions? Our support team is ready to assist.
+            </p>
+            <div class="flex justify-center">
+                <div class="info-card p-8 rounded-2xl max-w-lg w-full">
+                    <form method="POST" class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-300">Name</label>
+                            <input type="text" name="name" id="name" required
+                                   class="input-glow mt-1 w-full px-4 py-3 bg-gray-800 text-white rounded-lg focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
+                            <input type="email" name="email" id="email" required
+                                   class="input-glow mt-1 w-full px-4 py-3 bg-gray-800 text-white rounded-lg focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-300">Message</label>
+                            <textarea name="message" id="message" required
+                                      class="input-glow mt-1 w-full px-4 py-3 bg-gray-800 text-white rounded-lg focus:outline-none"></textarea>
+                        </div>
+                        <button type="submit"
+                                class="w-full py-3 px-4 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-300">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-gray-900/90 py-6 relative z-10">
+        <p class="text-center text-gray-400 text-sm">© 2025 LeafLens. All rights reserved.</p>
+    </footer>
+    <!-- Sparkle Particle Effect Script -->
+    <script>
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 80;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 4 + 2;
+                this.speedY = Math.random() * 0.8 + 0.4;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                if (this.y > canvas.height) {
+                    this.y = 0;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(104, 109, 224, ${this.opacity})`;
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

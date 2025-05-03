@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Farm Detector</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-400 via-blue-500 to-purple-600">
+        <div class="container mx-auto px-4 text-center">
+            <!-- Logo/Title -->
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4 animate-fade-in-down">
+                AI Farm Detector
+            </h1>
+            <!-- Subtitle -->
+            <h3 class="text-2xl md:text-3xl text-white mb-8 animate-fade-in-up">
+                Discover Plant Species with Cutting-Edge AI
+            </h3>
+            <!-- Call to Action Buttons -->
+            <div class="flex justify-center space-x-4">
+                <a href="{{ url_for('login') }}" 
+                   class="bg-white text-green-600 px-6 py-3 rounded-full font-semibold text-lg hover:bg-green-100 transition duration-300 transform hover:scale-105">
+                    Login
+                </a>
+                <a href="{{ url_for('register') }}" 
+                   class="bg-green-600 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-green-700 transition duration-300 transform hover:scale-105">
+                    Register
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Optional Custom Animation for Fade-In -->
+    <style>
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in-down {
+            animation: fadeInDown 1s ease-out;
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 1s ease-out;
+        }
+    </style>
+</body>
+</html>

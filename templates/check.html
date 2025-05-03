@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identify Plant - BioScan</title>
+    <!-- Use pre-built Tailwind CSS from jsDelivr CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            overflow-x: hidden;
+            color: #e2e8f0;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .glow {
+            position: absolute;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: glow 12s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0% { transform: scale(0.3); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 0.2; }
+            100% { transform: scale(0.3); opacity: 0.5; }
+        }
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .input-glow {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(74, 222, 128, 0.5);
+            background: rgba(15, 23, 42, 0.8);
+        }
+        .input-glow:focus {
+            border-color: #4ade80;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+            background: rgba(30, 41, 59, 0.9);
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.95);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(74, 222, 128, 0.3);
+        }
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.4), transparent);
+            transition: 0.5s;
+        }
+        .btn-glow:hover::before {
+            left: 100%;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative">
+    <!-- Glowing Background Animation -->
+    <div class="glow-bg">
+        <div class="glow w-80 h-80 top-20 left-10 opacity-40"></div>
+        <div class="glow w-96 h-96 top-50 right-20 opacity-30" style="animation-delay: -4s;"></div>
+        <div class="glow w-64 h-64 bottom-10 left-40 opacity-35" style="animation-delay: -8s;"></div>
+    </div>
+    <!-- Identification Section -->
+    <section class="min-h-screen flex items-center justify-center py-16 relative z-10">
+        <div class="container mx-auto px-4">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="max-w-md mx-auto mb-6">
+                {% for category, message in messages %}
+                <div class="bg-red-500 text-white p-4 rounded-lg slide-in">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            <!-- Upload Form -->
+            <div class="max-w-md mx-auto card rounded-2xl p-8 slide-in">
+                <h2 class="text-3xl font-bold text-green-400 text-center mb-6">Identify Your Plant</h2>
+                <form action="{{ url_for('check') }}" method="post" enctype="multipart/form-data" class="space-y-6">
+                    <!-- Plant Part Selection -->
+                    <div>
+                        <label for="organ" class="block text-sm font-medium text-gray-300">Select Plant Part</label>
+                        <select name="organ" id="organ" required 
+                                class="input-glow mt-1 w-full px-4 py-3 text-gray-200 rounded-lg focus:outline-none">
+                            <option value="leaf" class="bg-gray-800">Leaf</option>
+                            <option value="flower" class="bg-gray-800">Flower</option>
+                            <option value="fruit" class="bg-gray-800">Fruit</option>
+                            <option value="bark" class="bg-gray-800">Bark</option>
+                            <option value="habit" class="bg-gray-800">Habit</option>
+                        </select>
+                    </div>
+                    <!-- File Upload -->
+                    <div>
+                        <label for="plant_image" class="block text-sm font-medium text-gray-300">Upload Plant Image</label>
+                        <input type="file" name="plant_image" id="plant_image" accept="image/*" required 
+                               class="input-glow mt-1 w-full px-4 py-3 text-gray-200 rounded-lg focus:outline-none">
+                    </div>
+                    <!-- Submit Button -->
+                    <button type="submit" 
+                            class="btn-glow w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition duration-300">
+                        Identify Plant
+                    </button>
+                </form>
+            </div>
+            <!-- PlantNet API Response -->
+            {% if plant_result %}
+            <div class="max-w-md mx-auto mt-8 card rounded-2xl p-8 slide-in">
+                <h3 class="text-2xl font-bold text-green-400 mb-4">Analysis Results</h3>
+                {% if plant_image_url %}
+                <img src="{{ plant_image_url }}" alt="Uploaded Plant" class="w-full h-auto rounded-lg mb-4">
+                {% endif %}
+                <p class="text-gray-300">{{ plant_result }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</body>
+</html>
