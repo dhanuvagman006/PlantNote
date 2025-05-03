@@ -132,16 +132,17 @@
                             class="btn-glow w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition duration-300">
                         Identify Plant
                     </button>
+                    <button type="button" class="btn-glow w-full bg-gray-500 text-white py-3 rounded-lg font-semibold hover:bg-gray-600 transition duration-300" onclick="window.location.href='./dashboard';">Back</button>
                 </form>
             </div>
             <!-- PlantNet API Response -->
             {% if plant_result %}
-            <div class="max-w-md mx-auto mt-8 card rounded-2xl p-8 slide-in">
+            <div class="max-w-xl mx-auto mt-8 card rounded-3xl p-8 slide-in">
                 <h3 class="text-2xl font-bold text-green-400 mb-4">Analysis Results</h3>
                 {% if plant_image_url %}
                 <img src="{{ plant_image_url }}" alt="Uploaded Plant" class="w-full h-auto rounded-lg mb-4">
                 {% endif %}
-                <p class="text-gray-300">{{ plant_result }}</p>
+                <div class="text-gray-300">{{ plant_result | safe }}</div>
             </div>
             {% endif %}
         </div>

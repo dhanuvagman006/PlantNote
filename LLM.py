@@ -1,10 +1,27 @@
 import requests
 import json
 import markdown
-
+import os
+from dotenv import load_dotenv
+import re
+load_dotenv()
 def send_message(user_input):
     url = 'https://openrouter.ai/api/v1/chat/completions'
-    
+    user_input = """Provide agricultural info on a given species covering:
+
+Types (scientific & common names)
+
+Common diseases
+
+Nutrient needs
+
+Best harvest season
+
+Farming needs & cost
+
+Market price in India
+
+Ideal temperature & climate """+user_input
     # API key directly from the uploaded code
     API_KEY = os.getenv('LLM_API_KEY') 
 
@@ -33,17 +50,17 @@ def send_message(user_input):
         # Extract markdown content from the response
         data = response.json()
         markdown_text = data.get('choices', [{}])[0].get('message', {}).get('content', 'No response received.')
-        return(markdown_text)
-    #     # Convert markdown text to HTML
-    #     html_response = markdown.markdown(markdown_text)
+        # return(markdown_text)
+        # Convert markdown text to HTML
+        html_response = markdown.markdown(markdown_text)
+        html_response = re.sub(r'<hr\s*/?>', '<div class="mt-4"></div>', html_response)
+
         
-    #     return html_response
+        return html_response
     
-    # except requests.exceptions.HTTPError as e:
-    #     return f"HTTP error occurred: {e}"
-    # except requests.exceptions.RequestException as e:
-    #     return f"Request error occurred: {e}"
+    except requests.exceptions.HTTPError as e:
+        return f"HTTP error occurred: {e}"
+    except requests.exceptions.RequestException as e:   
+        return f"Request error occurred: {e}"
     except Exception as e:
         return f"An unexpected error occurred: {e}"
-
-print(send_message("Hello"))

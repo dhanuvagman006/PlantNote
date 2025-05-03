@@ -136,10 +136,10 @@ def check():
                 response.raise_for_status()
                 result = response.json()
                 if result.get("results"):
-                    plant_result = result["results"][0]
+                    plant_result = send_message(str(result["results"][0]['species']['commonNames']))
 
                     plant_image_url = url_for('static', filename=f'uploads/{filename}')
-                    session['plant_result'] = get_response(plant_result)
+                    session['plant_result'] = plant_result
                     session['plant_image_url'] = plant_image_url
                 else:
                     flash("No results found from PlantNet API.", "error")
@@ -184,6 +184,16 @@ def get_response(data):
     Format the entire response in markdown with clear section headings.
     """
     return send_message(str(data) + format_type)
+
+
+@app.route('/admin_page')
+def admin_page():
+    if 'username' not in session:
+        flash("You must be logged in to view the admin page.", "error")
+        return redirect(url_for('login'))
+    
+    users = load_users()
+    return render_template('admin_page.html', users=users)
 
 ###################MAIN FUNCTION###################
 if __name__ == '__main__':
