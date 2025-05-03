@@ -45,3 +45,5 @@ def send_message(user_input):
         return f"Request error occurred: {e}"
     except Exception as e:
         return f"An unexpected error occurred: {e}"
+
+print(send_message("Hello"))
