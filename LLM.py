@@ -6,7 +6,7 @@ def send_message(user_input):
     url = 'https://openrouter.ai/api/v1/chat/completions'
     
     # API key directly from the uploaded code
-    API_KEY = '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'
+    API_KEY = os.getenv('LLM_API_KEY') 
 
     if not API_KEY:
         return "Error: API Key is missing."
@@ -33,16 +33,16 @@ def send_message(user_input):
         # Extract markdown content from the response
         data = response.json()
         markdown_text = data.get('choices', [{}])[0].get('message', {}).get('content', 'No response received.')
+        return(markdown_text)
+    #     # Convert markdown text to HTML
+    #     html_response = markdown.markdown(markdown_text)
         
-        # Convert markdown text to HTML
-        html_response = markdown.markdown(markdown_text)
-        
-        return html_response
+    #     return html_response
     
-    except requests.exceptions.HTTPError as e:
-        return f"HTTP error occurred: {e}"
-    except requests.exceptions.RequestException as e:
-        return f"Request error occurred: {e}"
+    # except requests.exceptions.HTTPError as e:
+    #     return f"HTTP error occurred: {e}"
+    # except requests.exceptions.RequestException as e:
+    #     return f"Request error occurred: {e}"
     except Exception as e:
         return f"An unexpected error occurred: {e}"
 
