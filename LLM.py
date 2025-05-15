@@ -44,7 +44,6 @@ Ideal temperature & climate """+user_input
         # Use the json parameter for automatic JSON encoding
         response = requests.post(url, headers=headers, json=body)
         
-        # Check if the response is successful
         response.raise_for_status()  # Raises an error for bad responses (4xx, 5xx)
         
         # Extract markdown content from the response
