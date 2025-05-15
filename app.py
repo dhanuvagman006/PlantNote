@@ -5,6 +5,7 @@ import requests
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 from LLM import send_message  # Ensure that your LLM module is correctly imported
+import datetime
 
 ###################IMPORTING MODULES###################
 load_dotenv()  # Load environment variables from .env file
@@ -22,6 +23,18 @@ def load_users():
 def save_users(users):
     with open("users.json", "w") as f:
         json.dump(users, f)
+
+###################LOADING MESSAGES###################
+def load_messages():
+    if not os.path.exists("messages.json"):
+        return []
+    with open("messages.json", "r") as f:
+        return json.load(f)
+
+###################SAVING MESSAGES###################
+def save_messages(messages):
+    with open("messages.json", "w") as f:
+        json.dump(messages, f)
 
 ###################HOME PAGE###################
 @app.route('/')
@@ -185,6 +198,23 @@ def get_response(data):
     """
     return send_message(str(data) + format_type)
 
+@app.route('/contact', methods=['POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        message = request.form.get('message')
+        
+        messages = load_messages()
+        messages.append({
+            'name': name,
+            'email': email,
+            'message': message,
+            'timestamp': str(datetime.datetime.now())
+        })
+        save_messages(messages)
+        flash("Message sent successfully!", "success")
+        return redirect(url_for('dashboard'))
 
 @app.route('/admin_page')
 def admin_page():
@@ -193,7 +223,8 @@ def admin_page():
         return redirect(url_for('login'))
     
     users = load_users()
-    return render_template('admin_page.html', users=users)
+    messages = load_messages()
+    return render_template('admin_page.html', users=users, messages=messages)
 
 ###################MAIN FUNCTION###################
 if __name__ == '__main__':
