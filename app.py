@@ -216,15 +216,37 @@ def contact():
         flash("Message sent successfully!", "success")
         return redirect(url_for('dashboard'))
 
+###################ADMIN LOGIN PAGE###################
+@app.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        if username == 'admin' and password == 'admin':
+            session['admin'] = True
+            flash('Welcome, Admin!', 'success')
+            return redirect(url_for('admin_page'))
+        else:
+            flash('Invalid admin credentials!', 'error')
+    
+    return render_template('admin_login.html')
+
 @app.route('/admin_page')
 def admin_page():
-    if 'username' not in session:
-        flash("You must be logged in to view the admin page.", "error")
-        return redirect(url_for('login'))
+    if not session.get('admin'):
+        flash("You must be logged in as admin to view this page.", "error")
+        return redirect(url_for('admin_login'))
     
     users = load_users()
     messages = load_messages()
     return render_template('admin_page.html', users=users, messages=messages)
+
+@app.route('/admin_logout')
+def admin_logout():
+    session.pop('admin', None)
+    flash("Admin logged out successfully!", "success")
+    return redirect(url_for('dashboard'))
 
 ###################MAIN FUNCTION###################
 if __name__ == '__main__':

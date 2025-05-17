@@ -97,9 +97,14 @@
             </div>
         </div>
         
-        <a href="{{ url_for('dashboard') }}" class="inline-block bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition duration-300">
-            Back to Dashboard
-        </a>
+        <div class="flex justify-between items-center mt-8">
+            <a href="{{ url_for('dashboard') }}" class="inline-block bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition duration-300">
+                Back to Dashboard
+            </a>
+            <a href="{{ url_for('admin_logout') }}" class="inline-block bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition duration-300">
+                Admin Logout
+            </a>
+        </div>
     </div>
 </body>
 </html>
